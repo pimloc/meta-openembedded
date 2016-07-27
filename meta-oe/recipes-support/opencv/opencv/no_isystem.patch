@@ -1,0 +1,73 @@
+diff --git a/cmake/OpenCVDetectTBB.cmake b/cmake/OpenCVDetectTBB.cmake
+index be40b47..06b5b3b 100644
+--- a/cmake/OpenCVDetectTBB.cmake
++++ b/cmake/OpenCVDetectTBB.cmake
+@@ -1,6 +1,6 @@
+ if(BUILD_TBB)
+   add_subdirectory("${OpenCV_SOURCE_DIR}/3rdparty/tbb")
+-  include_directories(SYSTEM ${TBB_INCLUDE_DIRS})
++  include_directories(${TBB_INCLUDE_DIRS})
+   set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} tbb)
+   add_definitions(-DTBB_USE_GCC_BUILTINS=1 -D__TBB_GCC_BUILTIN_ATOMICS_PRESENT=1)
+   if(tbb_need_GENERIC_DWORD_LOAD_STORE)
+diff --git a/cmake/OpenCVPCHSupport.cmake b/cmake/OpenCVPCHSupport.cmake
+index e6585ca..47ffc26 100644
+--- a/cmake/OpenCVPCHSupport.cmake
++++ b/cmake/OpenCVPCHSupport.cmake
+@@ -24,7 +24,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
+     ENDIF()
+ 
+     SET(_PCH_include_prefix "-I")
+-    SET(_PCH_isystem_prefix "-isystem")
++    SET(_PCH_isystem_prefix "-I")
+     SET(_PCH_define_prefix "-D")
+ 
+ ELSEIF(CMAKE_GENERATOR MATCHES "^Visual.*$")
+diff --git a/cmake/OpenCVUtils.cmake b/cmake/OpenCVUtils.cmake
+index 0692b76..e674a8b 100644
+--- a/cmake/OpenCVUtils.cmake
++++ b/cmake/OpenCVUtils.cmake
+@@ -42,7 +42,7 @@ function(ocv_include_directories)
+     if("${__abs_dir}" MATCHES "^${OpenCV_SOURCE_DIR}" OR "${__abs_dir}" MATCHES "^${OpenCV_BINARY_DIR}")
+       list(APPEND __add_before "${dir}")
+     else()
+-      include_directories(AFTER SYSTEM "${dir}")
++      include_directories(AFTER "${dir}")
+     endif()
+   endforeach()
+   include_directories(BEFORE ${__add_before})
+diff --git a/cmake/templates/OpenCVConfig.cmake.in b/cmake/templates/OpenCVConfig.cmake.in
+index 167dfa9..db8b075 100644
+--- a/cmake/templates/OpenCVConfig.cmake.in
++++ b/cmake/templates/OpenCVConfig.cmake.in
+@@ -343,7 +343,7 @@ function(ocv_include_directories)
+     if("${__abs_dir}" MATCHES "^${__baseDir}")
+       list(APPEND __add_before "${dir}")
+     else()
+-      include_directories(AFTER SYSTEM "${dir}")
++      include_directories(AFTER "${dir}")
+     endif()
+   endforeach()
+   include_directories(BEFORE ${__add_before})
+diff --git a/modules/highgui/CMakeLists.txt b/modules/highgui/CMakeLists.txt
+index 44cf98c..a35c6ed 100644
+--- a/modules/highgui/CMakeLists.txt
++++ b/modules/highgui/CMakeLists.txt
+@@ -40,7 +40,7 @@ if(HAVE_JASPER)
+ endif()
+ 
+ if(HAVE_OPENEXR)
+-  include_directories(SYSTEM ${OPENEXR_INCLUDE_PATHS})
++  include_directories(${OPENEXR_INCLUDE_PATHS})
+   list(APPEND GRFMT_LIBS ${OPENEXR_LIBRARIES})
+ endif()
+ 
+@@ -241,7 +241,7 @@ endif()
+ 
+ if(WIN32)
+   link_directories("${OpenCV_SOURCE_DIR}/3rdparty/lib") # for ffmpeg wrapper only
+-  include_directories(AFTER SYSTEM "${OpenCV_SOURCE_DIR}/3rdparty/include") # for directshow in VS2005 and multi-monitor support on MinGW
++  include_directories(AFTER "${OpenCV_SOURCE_DIR}/3rdparty/include") # for directshow in VS2005 and multi-monitor support on MinGW
+ endif()
+ 
+ if(UNIX)

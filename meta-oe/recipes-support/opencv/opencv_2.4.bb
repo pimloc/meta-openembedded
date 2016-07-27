@@ -11,8 +11,10 @@ ARM_INSTRUCTION_SET_armv5 = "arm"
 DEPENDS = "python-numpy libtool swig swig-native python bzip2 zlib glib-2.0"
 
 SRCREV = "2c9547e3147779001811d01936aed38f560929fc"
+SRCREV = "${AUTOREV}"
 SRC_URI = "git://github.com/Itseez/opencv.git;branch=2.4 \
-  file://0001-Use-__vector-instead-of-vector-as-suggests-Eigen.patch"
+  file://0001-Use-__vector-instead-of-vector-as-suggests-Eigen.patch \
+  file://no_isystem.patch"
 
 PV = "2.4.11+git${SRCPV}"
 
@@ -32,6 +34,7 @@ EXTRA_OECMAKE = "-DPYTHON_NUMPY_INCLUDE_DIR:PATH=${STAGING_LIBDIR}/${PYTHON_DIR}
                  ${@bb.utils.contains("TARGET_CC_ARCH", "-msse4.2", "-DENABLE_SSE=1 -DENABLE_SSE2=1 -DENABLE_SSE3=1 -DENABLE_SSSE3=1 -DENABLE_SSE41=1 -DENABLE_SSE42=1", "", d)} \
                  ${@base_conditional("libdir", "/usr/lib64", "-DLIB_SUFFIX=64", "", d)} \
                  ${@base_conditional("libdir", "/usr/lib32", "-DLIB_SUFFIX=32", "", d)} \
+		-DWITH_OPENEXR=OFF \
 "
 
 PACKAGECONFIG ??= "eigen jpeg png tiff v4l libv4l \
@@ -101,6 +104,3 @@ do_install_append() {
         rm -rf ${D}/usr/lib
     fi
 }
-
-# http://errors.yoctoproject.org/Errors/Details/40660/
-PNBLACKLIST[opencv] ?= "Not compatible with currently used ffmpeg 3"
