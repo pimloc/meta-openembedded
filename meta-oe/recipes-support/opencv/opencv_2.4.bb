@@ -26,6 +26,9 @@ OECMAKE_BUILDPATH = "${WORKDIR}/build-${TARGET_ARCH}"
 
 EXTRA_OECMAKE = "-DPYTHON_NUMPY_INCLUDE_DIR:PATH=${STAGING_LIBDIR}/${PYTHON_DIR}/site-packages/numpy/core/include \
                  -DBUILD_PYTHON_SUPPORT=ON \
+		 -DBUILD_EXAMPLES=OFF \
+		 -DBUILD_TESTS=OFF \
+		 -DBUILD_PERF_TESTS=OFF \
                  -DWITH_GSTREAMER=OFF \
                  -DWITH_1394=OFF \
                  -DCMAKE_SKIP_RPATH=ON \
@@ -85,10 +88,12 @@ PACKAGES_DYNAMIC += "^libopencv-.*"
 FILES_${PN} = ""
 FILES_${PN}-apps = "${bindir}/* ${datadir}/OpenCV"
 FILES_${PN}-dbg += "${libdir}/.debug"
-FILES_${PN}-dev = "${includedir} ${libdir}/pkgconfig"
+FILES_${PN}-dev = "${includedir} ${libdir}/pkgconfig ${datadir}/OpenCV/*.cmake"
 FILES_${PN}-doc = "${datadir}/OpenCV/doc"
 
 ALLOW_EMPTY_${PN} = "1"
+
+RDEPENDS_${PN}-dev = "${PN}-staticdev"
 
 SUMMARY_python-opencv = "Python bindings to opencv"
 FILES_python-opencv = "${PYTHON_SITEPACKAGES_DIR}/*"
