@@ -1,0 +1,86 @@
+# HG changeset patch
+# User xantares <xantares09@hotmail.com>
+# Date 1381307150 -7200
+# Node ID 1d71b1341c03a7c485289be2c8bd906a259c0487
+# Parent  4be9703e25f01feeb770ae596e9989c090a84ce7
+Add cmake config files
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -418,3 +418,31 @@
+ endif()
+ 
+ message(STATUS "")
++
++set ( EIGEN_CONFIG_CMAKE_PATH
++      lib${LIB_SUFFIX}/cmake/eigen3
++      CACHE PATH "The directory where the CMake files are installed"
++    )
++if ( NOT IS_ABSOLUTE EIGEN_CONFIG_CMAKE_PATH )
++  set ( EIGEN_CONFIG_CMAKE_PATH ${CMAKE_INSTALL_PREFIX}/${EIGEN_CONFIG_CMAKE_PATH} )
++endif ()
++
++set ( EIGEN_USE_FILE ${EIGEN_CONFIG_CMAKE_PATH}/UseEigen3.cmake )
++set ( EIGEN_VERSION_STRING ${EIGEN_VERSION_NUMBER} )
++set ( EIGEN_VERSION_MAJOR  ${EIGEN_WORLD_VERSION} )
++set ( EIGEN_VERSION_MINOR  ${EIGEN_MAJOR_VERSION} )
++set ( EIGEN_VERSION_PATCH  ${EIGEN_MINOR_VERSION} )
++set ( EIGEN_DEFINITIONS "")
++set ( EIGEN_INCLUDE_DIR ${INCLUDE_INSTALL_DIR} )
++set ( EIGEN_INCLUDE_DIRS ${EIGEN_INCLUDE_DIR} )
++set ( EIGEN_ROOT_DIR ${CMAKE_INSTALL_PREFIX} )
++
++configure_file ( ${CMAKE_SOURCE_DIR}/cmake/Eigen3Config.cmake.in
++                 ${CMAKE_CURRENT_BINARY_DIR}/Eigen3Config.cmake
++                 @ONLY ESCAPE_QUOTES
++               )
++
++install ( FILES ${CMAKE_SOURCE_DIR}/cmake/UseEigen3.cmake
++                ${CMAKE_CURRENT_BINARY_DIR}/Eigen3Config.cmake
++          DESTINATION ${EIGEN_CONFIG_CMAKE_PATH}
++        )
+diff --git a/cmake/Eigen3Config.cmake.in b/cmake/Eigen3Config.cmake.in
+new file mode 100644
+--- /dev/null
++++ b/cmake/Eigen3Config.cmake.in
+@@ -0,0 +1,28 @@
++#                                               -*- cmake -*-
++#
++#  Eigen3Config.cmake(.in)
++
++# Use the following variables to compile and link against Eigen:
++#  EIGEN_FOUND              - True if Eigen was found on your system
++#  EIGEN_USE_FILE           - The file making Eigen usable
++#  EIGEN_DEFINITIONS        - Definitions needed to build with Eigen
++#  EIGEN_INCLUDE_DIR        - Directory where signature_of_eigen3_matrix_library can be found
++#  EIGEN_INCLUDE_DIRS       - List of directories of Eigen and it's dependencies
++#  EIGEN_ROOT_DIR           - The base directory of Eigen
++#  EIGEN_VERSION_STRING     - A human-readable string containing the version
++#  EIGEN_VERSION_MAJOR      - The major version of Eigen
++#  EIGEN_VERSION_MINOR      - The minor version of Eigen
++#  EIGEN_VERSION_PATCH      - The patch version of Eigen
++
++set ( EIGEN_FOUND 1 )
++set ( EIGEN_USE_FILE     "@EIGEN_USE_FILE@" )
++
++set ( EIGEN_DEFINITIONS  "@EIGEN_DEFINITIONS@" )
++set ( EIGEN_INCLUDE_DIR  "@EIGEN_INCLUDE_DIR@" )
++set ( EIGEN_INCLUDE_DIRS "@EIGEN_INCLUDE_DIRS@" )
++set ( EIGEN_ROOT_DIR     "@EIGEN_ROOT_DIR@" )
++
++set ( EIGEN_VERSION_STRING "@EIGEN_VERSION_STRING@" )
++set ( EIGEN_VERSION_MAJOR  "@EIGEN_VERSION_MAJOR@" )
++set ( EIGEN_VERSION_MINOR  "@EIGEN_VERSION_MINOR@" )
++set ( EIGEN_VERSION_PATCH  "@EIGEN_VERSION_PATCH@" )
+diff --git a/cmake/UseEigen3.cmake b/cmake/UseEigen3.cmake
+new file mode 100644
+--- /dev/null
++++ b/cmake/UseEigen3.cmake
+@@ -0,0 +1,6 @@
++#                                               -*- cmake -*-
++#
++#  UseEigen3.cmake
++
++add_definitions     ( ${EIGEN3_DEFINITIONS} )
++include_directories ( ${EIGEN3_INCLUDE_DIRS} )

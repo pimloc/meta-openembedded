@@ -1,0 +1,22 @@
+diff --git a/cmake/Eigen3Config.cmake.in b/cmake/Eigen3Config.cmake.in
+index 04e7886..fb8ab42 100644
+--- a/cmake/Eigen3Config.cmake.in
++++ b/cmake/Eigen3Config.cmake.in
+@@ -17,10 +17,14 @@
+ set ( EIGEN3_FOUND 1 )
+ set ( EIGEN3_USE_FILE     "${CMAKE_CURRENT_LIST_DIR}/UseEigen3.cmake" )
+ 
++get_filename_component ( CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
++get_filename_component ( _INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
++
++
+ set ( EIGEN3_DEFINITIONS  "@EIGEN_DEFINITIONS@" )
+-set ( EIGEN3_INCLUDE_DIR  "@EIGEN_INCLUDE_DIR@" )
+-set ( EIGEN3_INCLUDE_DIRS "@EIGEN_INCLUDE_DIRS@" )
+-set ( EIGEN3_ROOT_DIR     "@EIGEN_ROOT_DIR@" )
++set ( EIGEN3_INCLUDE_DIR  "${_INSTALL_PREFIX}/include/eigen3" )
++set ( EIGEN3_INCLUDE_DIRS "${_INSTALL_PREFIX}/include/eigen3" )
++set ( EIGEN3_ROOT_DIR     "${_INSTALL_PREFIX}" )
+ 
+ set ( EIGEN3_VERSION_STRING "@EIGEN_VERSION_STRING@" )
+ set ( EIGEN3_VERSION_MAJOR  "@EIGEN_VERSION_MAJOR@" )
