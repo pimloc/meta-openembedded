@@ -18,3 +18,9 @@ SRC_URI[md5sum] = "fca71e6598f79d037a3c7c969cb5710c"
 SRC_URI[sha256sum] = "f2e06eba5a21c621aac1d6da21b12a5a324fdd1e20f9c8acd357dd463c2355d9"
 
 S = "${WORKDIR}/${PN}-${PV}"
+
+do_install_append() {
+
+  install -d ${D}${base_sbindir}
+  ln -s ${sbindir}/mount.exfat ${D}${base_sbindir}/mount.exfat
+}
