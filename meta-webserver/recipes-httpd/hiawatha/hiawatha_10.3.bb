@@ -24,7 +24,6 @@ EXTRA_OECMAKE = " -DENABLE_IPV6=OFF \
                   -DENABLE_CACHE=OFF \
                   -DENABLE_DEBUG=OFF \
                   -DENABLE_SSL=OFF \
-                  -DENABLE_TOOLKIT=OFF \
                   -DENABLE_CHROOT=OFF \
                   -DENABLE_XSLT=ON \
                   -DENABLE_TOMAHAWK=OFF \
@@ -34,6 +33,10 @@ EXTRA_OECMAKE = " -DENABLE_IPV6=OFF \
                   -DCMAKE_INSTALL_SYSCONFDIR=${sysconfdir} \
                   -DCMAKE_INSTALL_LIBDIR=${libdir} \
                   -DCMAKE_INSTALL_FULL_LOCALSTATEDIR=${localstatedir}"
+
+PACKAGECONFIG ??= ""
+
+PACKAGECONFIG[toolkit] = "-DENABLE_TOOLKIT=ON,-DENABLE_TOOLKIT=OFF,"
 
 do_install_append() {
     # Copy over init script and sed in the correct sbin path
