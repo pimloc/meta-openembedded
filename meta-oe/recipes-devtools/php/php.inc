@@ -5,8 +5,7 @@ SECTION = "console/network"
 LICENSE = "PHP-3.0"
 
 BBCLASSEXTEND = "native"
-DEPENDS = "zlib bzip2 libxml2 virtual/libiconv php-native lemon-native \
-           openssl libmcrypt"
+DEPENDS = "php-native lemon-native libxml2"
 DEPENDS_class-native = "zlib-native libxml2-native"
 
 SRC_URI = "http://php.net/distributions/php-${PV}.tar.bz2 \
@@ -50,13 +49,8 @@ COMMON_EXTRA_OECONF = "--enable-sockets \
 EXTRA_OECONF = "--enable-mbstring \
                 --enable-wddx \
                 --enable-fpm \
-                --enable-zip \
-                --with-libdir=${baselib} \
                 --with-gettext=${STAGING_LIBDIR}/.. \
-                --with-zlib=${STAGING_LIBDIR}/.. \
-                --with-iconv=${STAGING_LIBDIR}/.. \
-                --with-mcrypt=${STAGING_DIR_TARGET}${exec_prefix} \
-                --with-bz2=${STAGING_DIR_TARGET}${exec_prefix} \
+                --with-libdir=${baselib} \
                 --with-config-file-path=${sysconfdir}/php/apache2-php5 \
                 ${@base_conditional('SITEINFO_ENDIANNESS', 'le', 'ac_cv_c_bigendian_php=no', 'ac_cv_c_bigendian_php=yes', d)} \
                 ${@bb.utils.contains('PACKAGECONFIG', 'pam', '', 'ac_cv_lib_pam_pam_start=no', d)} \
@@ -68,7 +62,7 @@ EXTRA_OECONF_class-native = " \
                 ${COMMON_EXTRA_OECONF} \
 "
 
-PACKAGECONFIG ??= "mysql sqlite3 imap \
+PACKAGECONFIG ??= "mysql sqlite3 imap openssl mcrypt bz2 zlib iconv zip \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'pam', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', 'ipv6', '', d)} \
 "
@@ -93,10 +87,19 @@ PACKAGECONFIG[imap] = "--with-imap=${STAGING_DIR_HOST} \
                        ,--without-imap --without-imap-ssl \
                        ,uw-imap"
 PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6,"
+PACKAGECONFIG[curl] = "--with-curl=${STAGING_LIBDIR}/..,--without-curl,curl"
+PACKAGECONFIG[openssl] = "--with-openssl=${STAGING_LIBDIR}/..,--without-openssl,openssl"
+PACKAGECONFIG[gd] = "--with-gd=${STAGING_LIBDIR}/..,--without-gd,gd"
+PACKAGECONFIG[zlib] = "--with-zlib=${STAGING_LIBDIR}/..,--without-zlib,zlib"
+PACKAGECONFIG[bz2] = "--with-bz2=${STAGING_DIR_TARGET}${exec_prefix},--without-bz2,bzip2"
+PACKAGECONFIG[mcrypt] = "--with-mcrypt=${STAGING_DIR_TARGET}${exec_prefix},--without-mcrypt,libmcrypt"
+PACKAGECONFIG[iconv] = "--with-iconv=${STAGING_LIBDIR}/..,--without-iconv,virtual/libiconv"
+PACKAGECONFIG[zip] = "--enable-zip,--disable-zip,"
 
 
 export PHP_NATIVE_DIR = "${STAGING_BINDIR_NATIVE}"
 export PHP_PEAR_PHP_BIN = "${STAGING_BINDIR_NATIVE}/php"
+
 CFLAGS += " -D_GNU_SOURCE -g -DPTYS_ARE_GETPT -DPTYS_ARE_SEARCHED -I${STAGING_INCDIR}/apache2"
 CFLAGS_append_aarch64 = " -O2"
 
@@ -113,6 +116,7 @@ do_configure_append() {
     # No, libtool, we really don't want rpath set...
     sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' ${HOST_SYS}-libtool
     sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' ${HOST_SYS}-libtool
+    sed -i '/HAVE_GD_XPM/d' ${B}/main/php_config.h
 }
 
 do_install_append_class-native() {
@@ -140,20 +144,23 @@ do_install_append_class-target() {
     if [ -d ${D}/${STAGING_DIR_NATIVE}/${sysconfdir} ];then
          mv ${D}/${STAGING_DIR_NATIVE}/${sysconfdir}/* ${D}/${sysconfdir}/
     fi
+
     rm -rf ${D}/${TMPDIR}
-    rm -rf ${D}/.registry
-    rm -rf ${D}/.channels
     rm -rf ${D}/.[a-z]*
     rm -rf ${D}/var
     rm -f  ${D}/${sysconfdir}/php-fpm.conf.default
+
     sed -i 's:${STAGING_DIR_NATIVE}::g' ${D}/${sysconfdir}/pear.conf
+
     install -m 0644 ${WORKDIR}/php-fpm.conf ${D}/${sysconfdir}/php-fpm.conf
     install -d ${D}/${sysconfdir}/apache2/conf.d
     install -m 0644 ${WORKDIR}/php-fpm-apache.conf ${D}/${sysconfdir}/apache2/conf.d/php-fpm.conf
     install -d ${D}${sysconfdir}/init.d
+
     sed -i 's:=/usr/sbin:=${sbindir}:g' ${B}/sapi/fpm/init.d.php-fpm
     sed -i 's:=/etc:=${sysconfdir}:g' ${B}/sapi/fpm/init.d.php-fpm
     sed -i 's:=/var:=${localstatedir}:g' ${B}/sapi/fpm/init.d.php-fpm
+
     install -m 0755 ${B}/sapi/fpm/init.d.php-fpm ${D}${sysconfdir}/init.d/php-fpm
     install -m 0644 ${WORKDIR}/php-fpm-apache.conf ${D}/${sysconfdir}/apache2/conf.d/php-fpm.conf
 
@@ -168,7 +175,7 @@ do_install_append_class-target() {
     TMP=`dirname ${D}/${TMPDIR}`
     while test ${TMP} != ${D}; do
         if [ -d ${TMP} ]; then
-            rmdir ${TMP}
+          rmdir ${TMP}
         fi
         TMP=`dirname ${TMP}`;
     done
@@ -237,6 +244,7 @@ FILES_${PN}-dev = "${includedir}/php ${PHP_LIBDIR}/build ${bindir}/phpize \
                 ${PHP_LIBDIR}/php/.lock ${PHP_LIBDIR}/php/test"
 FILES_${PN} = "${PHP_LIBDIR}/php"
 FILES_${PN} += "${bindir}"
+FILES_${PN} += "${PHP_LIBDIR}/modules"
 
 SUMMARY_${PN}-modphp = "PHP module for the Apache HTTP server"
 FILES_${PN}-modphp = "${libdir}/apache2 ${sysconfdir}"
