@@ -158,6 +158,7 @@ FILES_libverto = "${libdir}/libverto${SOLIBS}"
 
 RDEPENDS_${PN}-kadmin-server = "${PN}-kdc"
 RDEPENDS_${PN}-kpropd = "${PN}-kdc"
+RDEPENDS_${PN}-dev = ""
 
 INITSCRIPT_PACKAGES = "${PN}-admin-server ${PN}-kdc"
 INITSCRIPT_NAME_${PN}-admin-server = "krb5-admin-server"
