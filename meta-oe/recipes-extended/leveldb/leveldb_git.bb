@@ -11,6 +11,8 @@ SRC_URI = "git://github.com/google/${BPN}.git \
     file://0001-Explicitly-disable-tcmalloc.patch \
 "
 
+DEPENDS = "snappy"
+
 S = "${WORKDIR}/git"
 
 do_compile() {
