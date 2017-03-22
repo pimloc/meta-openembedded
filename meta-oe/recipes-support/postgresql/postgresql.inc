@@ -38,7 +38,7 @@ LEAD_SONAME = "libpq.so"
 # LDFLAGS for shared libraries
 export LDFLAGS_SL = "${LDFLAGS}"
 
-inherit autotools pkgconfig perlnative pythonnative useradd update-rc.d systemd
+inherit autotools pkgconfig perlnative pythonnative useradd update-rc.d systemd gettext
 
 CFLAGS += "-I${STAGING_INCDIR}/${PYTHON_DIR}"
 
