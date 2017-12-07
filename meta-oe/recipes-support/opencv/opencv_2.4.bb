@@ -12,7 +12,7 @@ DEPENDS = "python-numpy libtool swig swig-native python bzip2 zlib glib-2.0"
 
 SRCREV = "2c9547e3147779001811d01936aed38f560929fc"
 SRCREV = "${AUTOREV}"
-SRC_URI = "git://github.com/Itseez/opencv.git;branch=2.4 \
+SRC_URI = "git://github.com/opencv/opencv.git;branch=2.4 \
   file://0001-Use-__vector-instead-of-vector-as-suggests-Eigen.patch \
   file://no_isystem.patch"
 
